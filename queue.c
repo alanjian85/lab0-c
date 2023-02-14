@@ -110,6 +110,20 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    if (!head)
+        return false;
+    bool dup = false;
+    element_t *prev = NULL, *curr, *safe;
+    list_for_each_entry_safe (curr, safe, head, list) {
+        bool equal = prev && !strcmp(prev->value, curr->value);
+        if (equal || dup) {
+            list_del(&prev->list);
+            free(prev->value);
+            free(prev);
+            dup = equal;
+        }
+        prev = curr;
+    }
     return true;
 }
 
