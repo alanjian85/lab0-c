@@ -25,11 +25,10 @@ void q_free(struct list_head *l)
 {
     if (!l)
         return;
-    struct list_head *node, *safe;
-    list_for_each_safe (node, safe, l) {
-        element_t *element = list_entry(node, element_t, list);
-        free(element->value);
-        free(element);
+    element_t *entry, *safe;
+    list_for_each_entry_safe (entry, safe, l, list) {
+        free(entry->value);
+        free(entry);
     }
     free(l);
 }
