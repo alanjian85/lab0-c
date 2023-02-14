@@ -26,8 +26,11 @@ void q_free(struct list_head *l)
     if (!l)
         return;
     struct list_head *node, *safe;
-    list_for_each_safe (node, safe, l)
-        free(list_entry(node, element_t, list));
+    list_for_each_safe (node, safe, l) {
+        element_t *element = list_entry(node, element_t, list);
+        free(element->value);
+        free(element);
+    }
     free(l);
 }
 
@@ -39,7 +42,7 @@ bool q_insert_head(struct list_head *head, char *s)
     element_t *element = malloc(sizeof(element_t));
     if (!element)
         return false;
-    element->value = s;
+    element->value = strdup(s);
     list_add(&element->list, head);
     return true;
 }
@@ -52,7 +55,7 @@ bool q_insert_tail(struct list_head *head, char *s)
     element_t *element = malloc(sizeof(element_t));
     if (!element)
         return false;
-    element->value = s;
+    element->value = strdup(s);
     list_add_tail(&element->list, head);
     return true;
 }
