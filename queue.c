@@ -229,6 +229,17 @@ void q_sort(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
+    element_t *entry;
+    list_for_each_entry (entry, head, list) {
+        struct list_head *prev = entry->list.prev, *safe = prev->prev;
+        for (; prev != head; prev = safe, safe = safe->prev) {
+            element_t *prev_entry = list_entry(prev, element_t, list);
+            if (strcmp(prev_entry->value, entry->value) < 0) {
+                list_del(prev);
+                q_release_element(prev_entry);
+            }
+        }
+    }
     return 0;
 }
 
