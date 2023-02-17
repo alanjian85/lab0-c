@@ -160,23 +160,31 @@ void q_swap(struct list_head *head)
 /* Reverse elements in queue */
 void q_reverse(struct list_head *head)
 {
-    if (!head || list_empty(head))
+    if (!head)
         return;
-    struct list_head *node, *safe, *temp;
-    list_for_each_safe (node, safe, head) {
-        temp = node->prev;
-        node->prev = node->next;
-        node->next = temp;
-    }
-    temp = head->prev;
-    head->prev = head->next;
-    head->next = temp;
+    struct list_head *node, *safe;
+    list_for_each_safe (node, safe, head)
+        list_move(node, head);
 }
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    if (!head || list_empty(head))
+        return;
+    struct list_head *node = head->next;
+    for (;;) {
+        struct list_head *safe = node, *start = node->prev;
+        for (int i = 0; i < k; i++, node = node->next) {
+            if (node == head)
+                return;
+        }
+        node = safe;
+        safe = node->next;
+        for (int i = 0; i < k; i++, node = safe, safe = safe->next)
+            list_move(node, start);
+    }
 }
 
 int q_merge_two(struct list_head *first, struct list_head *second)
