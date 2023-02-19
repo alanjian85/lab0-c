@@ -253,29 +253,17 @@ int q_merge(struct list_head *head)
     // https://leetcode.com/problems/merge-k-sorted-lists/
     if (!head || list_empty(head))
         return 0;
-    int size = 0;
-    struct list_head *first_head, temp_head;
-    first_head = list_entry(head->next, queue_contex_t, chain)->q;
-    INIT_LIST_HEAD(&temp_head);
-    for (;;) {
-        element_t *minimum = NULL;
-        queue_contex_t *entry, *min_context;
-        list_for_each_entry (entry, head, chain) {
-            if (entry->q == NULL || list_empty(entry->q))
-                continue;
-            element_t *element = list_first_entry(entry->q, element_t, list);
-            if (!minimum || strcmp(element->value, minimum->value) < 0) {
-                minimum = element;
-                min_context = entry;
-            }
-        }
-        if (!minimum)
-            break;
-        list_move_tail(&minimum->list, &temp_head);
-        size++;
-        if (min_context->q != first_head && list_empty(min_context->q))
-            min_context->q = NULL;
+    if (list_is_singular(head))
+        return q_size(list_first_entry(head, queue_contex_t, chain)->q);
+    int queue_size = 0;
+    queue_contex_t *first, *second;
+    first = list_first_entry(head, queue_contex_t, chain),
+    second = list_entry(first->chain.next, queue_contex_t, chain);
+    while (second->q) {
+        queue_size = q_merge_two(first->q, second->q);
+        second->q = NULL;
+        list_move_tail(&second->chain, head);
+        second = list_entry(first->chain.next, queue_contex_t, chain);
     }
-    list_splice(&temp_head, first_head);
-    return size;
+    return queue_size;
 }
