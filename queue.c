@@ -207,8 +207,10 @@ int q_merge_two(struct list_head *first, struct list_head *second)
         list_move_tail(&minimum->list, &temp_head);
         size++;
     }
+    size += q_size(first);
     list_splice_tail_init(first, &temp_head);
-    list_splice_tail(second, &temp_head);
+    size += q_size(second);
+    list_splice_tail_init(second, &temp_head);
     list_splice(&temp_head, first);
     return size;
 }
@@ -256,12 +258,13 @@ int q_merge(struct list_head *head)
     if (list_is_singular(head))
         return q_size(list_first_entry(head, queue_contex_t, chain)->q);
     int queue_size = 0;
-    queue_contex_t *first, *second;
+    queue_contex_t *first, *second, *end = NULL;
     first = list_first_entry(head, queue_contex_t, chain),
     second = list_entry(first->chain.next, queue_contex_t, chain);
-    while (second->q) {
+    while (second != end) {
         queue_size = q_merge_two(first->q, second->q);
-        second->q = NULL;
+        if (!end)
+            end = second;
         list_move_tail(&second->chain, head);
         second = list_entry(first->chain.next, queue_contex_t, chain);
     }
