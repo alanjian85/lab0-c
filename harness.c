@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "dudect/cpucycles.h"
 #include "report.h"
 
 /* Our program needs to use regular malloc/free */
@@ -119,6 +120,8 @@ static size_t *find_footer(block_element_t *b)
 
 void *test_malloc(size_t size)
 {
+    cpucycles_stop();
+
     if (noallocate_mode) {
         report_event(MSG_FATAL, "Calls to malloc disallowed");
         return NULL;
@@ -152,6 +155,8 @@ void *test_malloc(size_t size)
         allocated->prev = new_block;
     allocated = new_block;
     allocated_count++;
+
+    cpucycles_start();
 
     return p;
 }

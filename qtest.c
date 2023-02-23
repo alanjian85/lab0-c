@@ -1,8 +1,10 @@
 /* Implementation of testing code for queue code */
 
+#define _GNU_SOURCE
 #include <assert.h>
 #include <errno.h>
 #include <getopt.h>
+#include <sched.h>
 #include <signal.h>
 #include <spawn.h>
 #include <stdio.h>
@@ -1074,6 +1076,13 @@ static void q_init()
     INIT_LIST_HEAD(&chain.head);
     signal(SIGSEGV, sigsegv_handler);
     signal(SIGALRM, sigalrm_handler);
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(getcpu(NULL, NULL), &set);
+    sched_setaffinity(getpid(), sizeof(set), &set);
+    struct sched_param sp;
+    sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
+    sched_setscheduler(0, SCHED_FIFO, &sp);
 }
 
 static bool q_quit(int argc, char *argv[])
