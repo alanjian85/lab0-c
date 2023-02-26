@@ -126,7 +126,7 @@ bool q_delete_dup(struct list_head *head)
     if (!head)
         return false;
     bool dup = false;
-    element_t *prev = NULL, *curr;
+    element_t *prev = NULL, *curr = NULL;
     list_for_each_entry (curr, head, list) {
         bool equal = prev && !strcmp(prev->value, curr->value);
         if (equal || dup) {
@@ -231,7 +231,7 @@ void q_sort(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    element_t *entry;
+    element_t *entry = NULL;
     list_for_each_entry (entry, head, list) {
         struct list_head *prev = entry->list.prev, *safe = prev->prev;
         for (; prev != head; prev = safe, safe = safe->prev) {

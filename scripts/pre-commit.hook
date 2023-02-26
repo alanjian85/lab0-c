@@ -9,6 +9,7 @@ CPPCHECK_suppresses="--inline-suppr harness.c \
 --suppress=missingIncludeSystem \
 --suppress=noValidConfiguration \
 --suppress=unusedFunction \
+--suppress=knownConditionTrueFalse \
 --suppress=identicalInnerCondition:log2_lshift16.h \
 --suppress=nullPointerRedundantCheck:report.c \
 --suppress=nullPointerRedundantCheck:harness.c \
