@@ -6,6 +6,8 @@
 
 /* Number of measurements per test */
 #define N_MEASURES 150
+#define N_PERCENTILES 100
+#define N_TESTS 1 + N_PERCENTILES
 
 /* Allow random number range from 0 to 65535 */
 #define CHUNK_SIZE 16
@@ -28,6 +30,7 @@ enum {
 
 void init_dut();
 void prepare_inputs(uint8_t *input_data, uint8_t *classes);
+void prepare_percentiles(int64_t *exec_times, int64_t *percentiles);
 bool measure(int64_t *before_ticks,
              int64_t *after_ticks,
              uint8_t *input_data,
