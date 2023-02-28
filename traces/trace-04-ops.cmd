@@ -19,3 +19,22 @@ rh
 rh
 rh
 size
+
+option descend 1
+ih gerbil
+ih bear
+ih dolphin
+swap
+rh bear
+ih bear
+size
+it meerkat
+it bear
+it gerbil
+size
+sort
+rh meerkat
+rh
+rh
+rh
+size

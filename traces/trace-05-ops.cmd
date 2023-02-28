@@ -25,4 +25,29 @@ rh gerbil
 rh bear
 rh bear
 size
+
+option descend 1
+ih dolphin
+ih bear
+ih gerbil
+reverse
+size
+it meerkat
+it bear
+it gerbil
+size
+rh dolphin
+reverse
+size
+sort
+it fish
+swap
+reverse
+rh bear
+rh fish
+rh gerbil
+rh bear
+rh meerkat
+rh gerbil
+size
 free

@@ -22,3 +22,27 @@ rh z
 rh r
 rh r
 rh n
+
+option descend 1
+free
+new
+ih a
+ih r
+ih b
+sort
+new
+ih m
+ih n
+ih a
+sort
+new
+ih r
+ih c
+ih z
+sort
+merge
+reverse
+rh a
+rh a
+rh b
+rh c
