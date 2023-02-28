@@ -180,7 +180,7 @@ void q_reverseK(struct list_head *head, int k)
     }
 }
 
-int q_merge_two(struct list_head *first, struct list_head *second)
+int q_merge_two(struct list_head *first, struct list_head *second, bool descend)
 {
     if (!first || !second)
         return 0;
@@ -191,8 +191,12 @@ int q_merge_two(struct list_head *first, struct list_head *second)
         element_t *first_front = list_first_entry(first, element_t, list);
         element_t *second_front = list_first_entry(second, element_t, list);
         char *first_str = first_front->value, *second_str = second_front->value;
-        element_t *minimum =
-            strcmp(first_str, second_str) < 0 ? first_front : second_front;
+        bool condition;
+        if (descend)
+            condition = strcmp(first_str, second_str) > 0;
+        else
+            condition = strcmp(first_str, second_str) < 0;
+        element_t *minimum = condition ? first_front : second_front;
         list_move_tail(&minimum->list, &temp_head);
         size++;
     }
@@ -204,8 +208,8 @@ int q_merge_two(struct list_head *first, struct list_head *second)
     return size;
 }
 
-/* Sort elements of queue in ascending order */
-void q_sort(struct list_head *head)
+/* Sort elements of queue in ascending/descending order */
+void q_sort(struct list_head *head, bool descend)
 {
     if (!head || list_empty(head) || list_is_singular(head))
         return;
@@ -214,9 +218,31 @@ void q_sort(struct list_head *head)
         slow = slow->next;
     struct list_head left;
     list_cut_position(&left, head, slow);
-    q_sort(&left);
-    q_sort(head);
-    q_merge_two(head, &left);
+    q_sort(&left, descend);
+    q_sort(head, descend);
+    q_merge_two(head, &left, descend);
+}
+
+/* Remove every node which has a node with a strictly less value anywhere to
+ * the right side of it */
+int q_ascend(struct list_head *head)
+{
+    // https://leetcode.com/problems/remove-nodes-from-linked-list/
+    element_t *entry = NULL;
+    int size = 0;
+    list_for_each_entry (entry, head, list) {
+        struct list_head *prev = entry->list.prev, *safe = prev->prev;
+        for (; prev != head; prev = safe, safe = safe->prev) {
+            element_t *prev_entry = list_entry(prev, element_t, list);
+            if (strcmp(prev_entry->value, entry->value) <= 0)
+                break;
+            size--;
+            list_del(prev);
+            q_release_element(prev_entry);
+        }
+        size++;
+    }
+    return size;
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
@@ -242,7 +268,7 @@ int q_descend(struct list_head *head)
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending order */
-int q_merge(struct list_head *head)
+int q_merge(struct list_head *head, bool descend)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
     if (!head || list_empty(head))
@@ -254,7 +280,7 @@ int q_merge(struct list_head *head)
     first = list_first_entry(head, queue_contex_t, chain),
     second = list_entry(first->chain.next, queue_contex_t, chain);
     while (second != end) {
-        queue_size = q_merge_two(first->q, second->q);
+        queue_size = q_merge_two(first->q, second->q, descend);
         if (!end)
             end = second;
         list_move_tail(&second->chain, head);
