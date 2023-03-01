@@ -180,11 +180,12 @@ void q_reverseK(struct list_head *head, int k)
     }
 }
 
-int q_merge_two(struct list_head *first, struct list_head *second, bool descend)
+void q_merge_two(struct list_head *first,
+                 struct list_head *second,
+                 bool descend)
 {
     if (!first || !second)
-        return 0;
-    int size = 0;
+        return;
     struct list_head temp_head;
     INIT_LIST_HEAD(&temp_head);
     while (!list_empty(first) && !list_empty(second)) {
@@ -198,14 +199,10 @@ int q_merge_two(struct list_head *first, struct list_head *second, bool descend)
             condition = strcmp(first_str, second_str) < 0;
         element_t *minimum = condition ? first_front : second_front;
         list_move_tail(&minimum->list, &temp_head);
-        size++;
     }
-    size += q_size(first);
     list_splice_tail_init(first, &temp_head);
-    size += q_size(second);
     list_splice_tail_init(second, &temp_head);
     list_splice(&temp_head, first);
-    return size;
 }
 
 /* Sort elements of queue in ascending/descending order */
@@ -273,20 +270,22 @@ int q_merge(struct list_head *head, bool descend)
     // https://leetcode.com/problems/merge-k-sorted-lists/
     if (!head || list_empty(head))
         return 0;
+    queue_contex_t *first = list_first_entry(head, queue_contex_t, chain);
+    int size = q_size(first->q);
     if (list_is_singular(head))
-        return q_size(list_first_entry(head, queue_contex_t, chain)->q);
-    int queue_size = 0;
-    queue_contex_t *first, *second, *end = NULL;
-    first = list_first_entry(head, queue_contex_t, chain),
-    second = list_entry(first->chain.next, queue_contex_t, chain);
+        return size;
+    queue_contex_t *second =
+        list_entry(first->chain.next, queue_contex_t, chain);
+    queue_contex_t *end = NULL;
     while (second != end) {
-        queue_size = q_merge_two(first->q, second->q, descend);
+        size += q_size(second->q);
+        q_merge_two(first->q, second->q, descend);
         if (!end)
             end = second;
         list_move_tail(&second->chain, head);
         second = list_entry(first->chain.next, queue_contex_t, chain);
     }
-    return queue_size;
+    return size;
 }
 
 void q_shuffle(struct list_head *head)
